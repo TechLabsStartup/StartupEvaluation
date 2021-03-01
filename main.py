@@ -3,12 +3,27 @@ import numpy as np
 
 #Import
 degrees = pd.read_csv('degrees.csv', low_memory=False)
+people = pd.read_csv('people.csv', low_memory=False)
+relationships = pd.read_csv('relationships.csv', low_memory=False )
+objects = pd.read_csv('objects.csv', low_memory=False )
 
 #Übernahme aller relevanten Spalten
 #df = pd.DataFrame(degrees, columns = ['object_id', 'degree_type', 'subject', 'institution', 'graduated_at'])
 
 #vorerst: nur Teildataset
 dfshort = pd.DataFrame(degrees, columns = ['object_id', 'degree_type', 'subject'])
+dfpeople = pd.DataFrame(people, columns = ['object_id', 'first_name', 'last_name'])
+#dfrelationships = pd.DataFrame(relationships, columns = ['person_object_id', 'relationship_object_id'])
+#dfobjects = pd.DataFrame(objects, columns = ['entity_id', 'name'])
+
+#Merge/Join tables -->error: int zu Object
+#dfshort.object_id.astype(str)
+#dfpeople.object_id.astype(str)
+#dfshort = dfshort.join(dfpeople, on = 'object_id')
+#print(dfshort.dtypes)
+#print(dfpeople.dtypes)
+
+#Part 1: subjects
 
 #Spalte pro Kategorie hinzufügen mit Anfangswert 0 (für Dummy Variablen):
 dfshort['Computer Science'] = 0
@@ -41,14 +56,17 @@ dfshort['subject'] = dfshort['subject'].str.lower()
 compScienceList = ['comput', 'software', 'informat', 'artifical', 'artificial', 'eecs', 'machine l', 'game', 'programming', 'data']
 for i in compScienceList:
     dummy('subject', i, 'Computer Science')
-# später/zum Schluss: it mit Computer science ersetzen, zuvor zu viele Überschneidungen
-# ebenso: cs = computer science zum Schluss
+
+# ebenso: cs = computer science -->ohne contains, sondern Gleichheit
+dfshort.loc[(dfshort['subject'] == 'it'), 'Computer Science'] = 1
+dfshort.loc[(dfshort['subject'] == 'cs'), 'Computer Science'] = 1
 
 #Kategorie Engineering
 engineeringList = ['elec', 'mechan', 'engine', 'telecommunication', 'robot', 'material', 'aero']
 for i in engineeringList:
     dummy('subject', i, 'Engineering')
-#später: ee = electrical engineering
+#später: ee = electrical engineering -->ohne contains, sondern Gleichheit
+dfshort.loc[(dfshort['subject'] == 'ee'), 'Engineering'] = 1
 
 #Kategorie Mathematics
 mathematicList = ['math', 'operations research', 'statistics']
@@ -74,6 +92,9 @@ humanitiesList = ['law','histo','engl','philo','commun','journ','architect','art
 for i in humanitiesList:
     dummy('subject', i, 'Humanities')
 
+# falls JD in Spalte degree_type ebenso Humanities Kategorie
+dummy('degree_type', 'JD', 'Humanities')
+
 #Kategorie Medical and Health
 medicalHealthList = ['medic','pharma', 'nursing', 'health','nutrition','epidemi','clinic','neurolo','pathology' ]
 for i in medicalHealthList:
@@ -89,11 +110,16 @@ for i in businessList:
 #falls MBA Titel in Spalte degree_type hat ebenso Business Kategorie
 dummy('degree_type', 'MBA', 'Business')
 
-#Ausgabe Gesamtdatei
-#print(dfshort)
+#Kategorie Others (wenn alle anderen Kategorien nicht zutreffen, also 0 sind
+dfshort.loc[(dfshort['Computer Science'] == 0) & (dfshort['Engineering'] == 0) & (dfshort['Mathematics'] == 0)
+& (dfshort['Natural Sciences'] == 0) & (dfshort['Social Sciences'] == 0) & (dfshort['Humanities'] == 0)
+& (dfshort['Medical and Health'] == 0) & (dfshort['Business'] == 0), 'Others'] = 1
+
+#Part 2: still to do: degree titel + university
+
 
 #Ausgabe Zusammenfassung
-print(dfshort.describe(include="all"))
+#print(dfshort.describe(include="all"))
 
 #transform to csv again (leider nur ersten 16.000 nicht alle 100.000)
 #dfshort.to_csv('/Users/Basti/Desktop/Test6.csv')
