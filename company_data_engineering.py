@@ -46,3 +46,7 @@ def get_domain_info():
 
 company_founding = get_founding_date_info()
 company_domain = get_domain_info()
+
+company_founding.to_csv('company_founding.csv')
+company_domain.to_csv('company_domain.csv')
+

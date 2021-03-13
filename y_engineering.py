@@ -8,7 +8,7 @@ acquisitions = pd.read_csv('acquisitions.csv', low_memory=False)
 
 #Checking if companies had a funding round or were acquired. If yes, store 1 in a dummy variable.
 def filter_y_data_and_join_on_companies():
-    companies = objects[objects.entity_type == "Company"]
+    company_ids = objects[objects.entity_type == "Company"]
 
     funding_rounds_by_company = funding_rounds.groupby("object_id").count()
     funding_rounds_by_company["has_funding_from_funding_rounds_table"]=1
@@ -18,8 +18,9 @@ def filter_y_data_and_join_on_companies():
     acquisitions_by_company["was_acquired"]=1
     acquisitions_by_company_with_dummy = acquisitions_by_company.filter(['acquired_object_id','was_acquired'])
 
-    company_ids = companies.filter(['id', "funding_rounds"])
     company_ids.rename({'id': 'company_id'}, axis='columns', inplace=True)
+
+    print(company_ids.dtypes)
 
     companies_y = company_ids.join(funding_rounds_by_company_with_dummy, on = "company_id")
     companies_y = companies_y.join(acquisitions_by_company_with_dummy, on = "company_id")
@@ -33,4 +34,4 @@ def filter_y_data_and_join_on_companies():
 
 companies_y = filter_y_data_and_join_on_companies()
 
-companies_y.to_csv('companies_y.csv')
+#companies_y.to_csv('companies_y.csv')
