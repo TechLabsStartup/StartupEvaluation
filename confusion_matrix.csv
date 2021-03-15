@@ -1,0 +1,11 @@
+confusion matrix,,pred 0,pred 1,,
+,act 0,true neg,false positive,,
+,act 1,false neg,true positive,,
+,,,,,
+,test-data (15.03.21),,,sum,percentage
+,,29822,1833,31655,"80,52%"
+,,5446,2210,7656,"19,48%"
+,,,,,
+,train (15.03.21),,,sum,percentage
+,act 0,121234,5156,126390,"90,90%"
+,act 1,2050,10602,12652,"9,10%"
