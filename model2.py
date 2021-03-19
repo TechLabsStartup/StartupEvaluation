@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-
+from sklearn.utils import resample
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 
@@ -117,7 +117,7 @@ def model(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
     y = data.loc[:, 'funded_or_acquired']
 
-    X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.20, random_state=1, shuffle=True)
+    X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.2, random_state=1, shuffle=True)
 
     model = DecisionTreeClassifier()
     model.fit(X_train, Y_train)
@@ -128,9 +128,53 @@ def model(data):
     print(confusion_matrix(Y_validation, predictions))
     print(classification_report(Y_validation, predictions))
 
+    print("----")
+    print("checking on training data:")
+    model2 = DecisionTreeClassifier()
+    model2.fit(X_train, Y_train)
+    predictions2 = model2.predict(X_train)
+    print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
+
+    print("confusion matrix")
+    print(confusion_matrix(Y_train, predictions2))
+
+def upsample_data(data):
+    #from: https://elitedatascience.com/imbalanced-classes
+
+    print("------")
+    print("trying to balance the dataset using upsampling = duplicate funded startups until here are as many companies as non funded ones")
+
+    print("summary of dataset: "+str(data.funded_or_acquired.value_counts()))
+
+    # Separate majority and minority classes
+    df_majority = data[data.funded_or_acquired == 0]
+    df_minority = data[data.funded_or_acquired == 1]
+
+    print("summary of majority: "+str(df_majority.funded_or_acquired.value_counts()))
+    print("summary of minority: "+str(df_minority.funded_or_acquired.value_counts()))
+
+    # Upsample minority class
+    df_minority_upsampled = resample(df_minority,
+                                     replace=True,  # sample with replacement
+                                     n_samples=158045,  # to match majority class
+                                     random_state=123)  # reproducible results
+
+    # Combine majority class with upsampled minority class
+    df_upsampled = pd.concat([df_majority, df_minority_upsampled])
+
+    # Display new class counts
+    print("after upsampling:")
+    print(df_upsampled.funded_or_acquired.value_counts())
+
+    return df_upsampled
+
 
 data = prepare_training_data()
 model(data)
+
+data_upsampled = upsample_data(data)
+model(data_upsampled)
+
 
 
 
