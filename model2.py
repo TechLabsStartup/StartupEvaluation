@@ -48,6 +48,8 @@ def prepare_training_data():
     companies_y = companies_y.drop('Unnamed: 0', 1)
     companies_y['funded_or_acquired'] = companies_y['funded_or_acquired'].astype(int)
 
+    companies_races = pd.read_csv('racecompany.csv', low_memory=False)
+
 
     company_founding = pd.read_csv('company_founding.csv', low_memory=False)
 
@@ -99,6 +101,12 @@ def prepare_training_data():
     train = train.join(gender_per_company, on="company_id", how='left')
     train = train.fillna(0.5)
 
+    companies_races.rename({'object_id': 'company_id'}, axis='columns', inplace=True)
+    companies_races = companies_races.set_index("company_id")
+    train = train.join(companies_races, on="company_id", how='left')
+    train=train.fillna(0)
+
+
     train = train.drop('male', 1)
     train = train.drop('Others', 1)
     train = train.drop('Others_country', 1)
@@ -117,7 +125,7 @@ def model(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
     y = data.loc[:, 'funded_or_acquired']
 
-    X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.2, random_state=1, shuffle=True)
+    X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.3, random_state=1, shuffle=True)
 
     model = DecisionTreeClassifier()
     model.fit(X_train, Y_train)
@@ -168,12 +176,45 @@ def upsample_data(data):
 
     return df_upsampled
 
+def downsample_data(data):
+    #from: https://elitedatascience.com/imbalanced-classes
+
+    print("------")
+    print("trying to balance the dataset using downsampling = delete un-funded startups until here are as many companies as non funded ones")
+
+    print("summary of dataset: "+str(data.funded_or_acquired.value_counts()))
+
+    # Separate majority and minority classes
+    df_majority = data[data.funded_or_acquired == 0]
+    df_minority = data[data.funded_or_acquired == 1]
+
+    print("summary of majority: "+str(df_majority.funded_or_acquired.value_counts()))
+    print("summary of minority: "+str(df_minority.funded_or_acquired.value_counts()))
+
+    # Upsample minority class
+    df_majority_downsampled = resample(df_majority,
+                                     replace=False,  # sample with replacement
+                                     n_samples=38508,  # to match majority class
+                                     random_state=123)  # reproducible results
+
+    # Combine majority class with upsampled minority class
+    df_downsampled = pd.concat([df_majority_downsampled, df_minority])
+
+    # Display new class counts
+    print("after downsampling:")
+    print(df_downsampled.funded_or_acquired.value_counts())
+
+    return df_downsampled
+
 
 data = prepare_training_data()
 model(data)
 
 data_upsampled = upsample_data(data)
 model(data_upsampled)
+
+data_downsampled = downsample_data(data)
+model(data_downsampled)
 
 
 
