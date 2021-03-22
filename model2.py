@@ -41,8 +41,6 @@ def gender():
 
     return final_result
 
-
-
 def prepare_training_data():
     companies_y = pd.read_csv('companies_y.csv', low_memory=False)
     companies_y = companies_y.drop('Unnamed: 0', 1)
@@ -135,6 +133,14 @@ def model(data):
     print("confusion_matrix:")
     print(confusion_matrix(Y_validation, predictions))
     print(classification_report(Y_validation, predictions))
+
+    importance = model.feature_importances_
+    # summarize feature importance
+    for i, v in enumerate(importance):
+        print('Feature: %0d, Score: %.5f' % (i, v))
+    # plot feature importance
+    pyplot.bar([x for x in range(len(importance))], importance)
+    pyplot.show()
 
     print("----")
     print("checking on training data:")
