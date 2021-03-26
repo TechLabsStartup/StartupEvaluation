@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -41,7 +40,7 @@ def gender():
 
     return final_result
 
-def prepare_training_data():
+def prepare_data():
     companies_y = pd.read_csv('companies_y.csv', low_memory=False)
     companies_y = companies_y.drop('Unnamed: 0', 1)
     companies_y['funded_or_acquired'] = companies_y['funded_or_acquired'].astype(int)
@@ -103,12 +102,21 @@ def prepare_training_data():
     companies_races = companies_races.set_index("company_id")
     train = train.join(companies_races, on="company_id", how='left')
     train=train.fillna(0)
+    train = train.drop('Unnamed: 0', 1)
+
+
+    domain_endings = pd.read_csv('domain_ending_dummy.csv', low_memory=False)
+    domain_endings.rename({'id': 'company_id'}, axis='columns', inplace=True)
+    domain_endings = domain_endings.set_index("company_id")
+    train = train.join(domain_endings, on="company_id", how='left')
+    train=train.fillna(0)
+    train = train.drop('Unnamed: 0', 1)
+
 
 
     train = train.drop('male', 1)
     train = train.drop('Others', 1)
     train = train.drop('Others_country', 1)
-    train = train.drop('Unnamed: 0', 1)
 
 
     return train
@@ -213,11 +221,11 @@ def downsample_data(data):
     return df_downsampled
 
 
-data = prepare_training_data()
+data = prepare_data()
 model(data)
 
-data_upsampled = upsample_data(data)
-model(data_upsampled)
+#data_upsampled = upsample_data(data)
+#model(data_upsampled)
 
 data_downsampled = downsample_data(data)
 model(data_downsampled)

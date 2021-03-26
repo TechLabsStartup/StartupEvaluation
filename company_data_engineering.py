@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from datetime import datetime
 
 
@@ -42,11 +43,25 @@ def get_domain_info():
 
     return company_domain
 
+def domain_ending_dummy(company_domain):
+
+    endings = company_domain.drop(columns=['domain_name', 'domain_name_length', 'domain'])
+
+    endings['domain_ending'] = np.where(endings['domain_ending'].isin(['com', 'co', 'net', 'org', 'de', 'in', 'me', 'ca', 'tv', 'us', 'it', 'io', 'fr', 'ru', 'eu', 'nl', 'biz', 'es', 'se', 'ie']), endings['domain_ending'], 'Other')
+
+    endings = pd.get_dummies(endings, columns=['domain_ending'])
+
+    return endings
+
+
 
 
 company_founding = get_founding_date_info()
 company_domain = get_domain_info()
+domain_ending_dummy = domain_ending_dummy(company_domain)
 
-company_founding.to_csv('company_founding.csv')
-company_domain.to_csv('company_domain.csv')
+
+#company_founding.to_csv('company_founding.csv')
+#company_domain.to_csv('company_domain.csv')
+domain_ending_dummy.to_csv('domain_ending_dummy.csv')
 
