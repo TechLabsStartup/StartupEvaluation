@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import resample
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import pickle
 
 
 def gender():
@@ -141,6 +142,11 @@ def model(data):
     print("confusion_matrix:")
     print(confusion_matrix(Y_validation, predictions))
     print(classification_report(Y_validation, predictions))
+
+    # Saving the Model
+    pickle_out = open("decision_tree_model.pkl", "wb")
+    pickle.dump(model, pickle_out)
+    pickle_out.close()
 
     importance = model.feature_importances_
     # summarize feature importance
