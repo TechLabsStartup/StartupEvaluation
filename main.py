@@ -116,6 +116,7 @@ dfshort['degree_type'] = dfshort['degree_type'].str.lower()
 dfshort['Master'] = 0
 dfshort['Bachelor'] = 0
 dfshort['Phd'] = 0
+dfshort['Unknown Degree'] = 0
 
 #Kategorie Master:
 masterList = ['mba', 'ms', 'master', 'jd', 'm.math', 'mps', 'mphil', 'mpa', 'meng', 'diplom',
@@ -145,11 +146,14 @@ for i in PhdList:
 #Idee: falls 1 bei Phd, 0 bei Master und Bachelor
 #sowie falls 1 bei Master, dann 0 bei Bachelor
 
+#Kategorie Unknown Degrees (wenn alle anderen Kategorien nicht zutreffen, also 0 sind:
+dfshort.loc[(dfshort['Master'] == 0) & (dfshort['Bachelor'] == 0) & (dfshort['Phd'] == 0), 'Others'] = 1
+
 #Ausgabe Zusammenfassung
 #print(dfshort.describe(include="all"))
 
 #transform to csv again
-dfshort.to_csv('/Users/Basti/Desktop/Testdegree2.csv')
+#dfshort.to_csv('/Users/Basti/Desktop/Testdegree2.csv')
 
 
 
