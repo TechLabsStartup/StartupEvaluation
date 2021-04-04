@@ -236,6 +236,9 @@ model(data)
 data_downsampled = downsample_data(data)
 model(data_downsampled)
 
+#data.to_csv('data.csv')
+
+
 
 
 
