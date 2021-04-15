@@ -129,12 +129,8 @@ def prepare_data():
     return train
 
 def model_dt(data):
-    #bulid the model
     #from: https://machinelearningmastery.com/machine-learning-in-python-step-by-step/
 
-    # split the dataset in training and testing data. This is a important step in
-    # every machine learning project. But you will learn about this in detail in
-    # your curriculum videos and exercises
     X = data.loc[:, data.columns != 'funded_or_acquired']
     y = data.loc[:, 'funded_or_acquired']
 
@@ -156,13 +152,20 @@ def model_dt(data):
 
     importance = model.feature_importances_
     # summarize feature importance
-    for i, v in enumerate(importance):
-        print('Feature: %0d, Score: %.5f' % (i, v))
+    #for i, v in enumerate(importance):
+        #print('Feature: %0d, Score: %.5f' % (i, v))
     # plot feature importance
+    pyplot.rcParams["figure.figsize"] = (15, 10)
     pyplot.bar([x for x in range(len(importance))], importance)
     pyplot.show()
 
-    print("----")
+    feat_importances = pd.Series(model.feature_importances_, index=X_train.columns)
+    ax = feat_importances.nlargest(10).plot(kind='barh')
+    ax.set(ylabel="feature (top 10)", xlabel="feature importance (decision tree classifier)")
+    pyplot.savefig("decision_tree_feature_importances.png")
+    pyplot.show()
+
+
     print("checking on training data:")
     model2 = DecisionTreeClassifier()
     model2.fit(X_train, Y_train)
@@ -188,7 +191,6 @@ def model_gauss(data):
     print(classification_report(Y_validation, predictions))
 
 
-    print("----")
     print("checking on training data:")
     model2 = DecisionTreeClassifier()
     model2.fit(X_train, Y_train)
@@ -214,7 +216,6 @@ def model_linear(data):
     print(classification_report(Y_validation, predictions))
 
 
-    print("----")
     print("checking on training data:")
     model2 = DecisionTreeClassifier()
     model2.fit(X_train, Y_train)
@@ -223,6 +224,8 @@ def model_linear(data):
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return model
 
 def model_SVC(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
@@ -240,7 +243,7 @@ def model_SVC(data):
     print(classification_report(Y_validation, predictions))
 
 
-    print("----")
+
     print("checking on training data:")
     model2 = DecisionTreeClassifier()
     model2.fit(X_train, Y_train)
@@ -283,17 +286,17 @@ def upsample_data(data):
 def downsample_data(data):
     #from: https://elitedatascience.com/imbalanced-classes
 
-    print("------")
-    print("trying to balance the dataset using downsampling = delete un-funded startups until here are as many companies as non funded ones")
+    #print("------")
+    #print("trying to balance the dataset using downsampling = delete un-funded startups until here are as many companies as non funded ones")
 
-    print("summary of dataset: "+str(data.funded_or_acquired.value_counts()))
+    #print("summary of dataset: "+str(data.funded_or_acquired.value_counts()))
 
     # Separate majority and minority classes
     df_majority = data[data.funded_or_acquired == 0]
     df_minority = data[data.funded_or_acquired == 1]
 
-    print("summary of majority: "+str(df_majority.funded_or_acquired.value_counts()))
-    print("summary of minority: "+str(df_minority.funded_or_acquired.value_counts()))
+    #print("summary of majority: "+str(df_majority.funded_or_acquired.value_counts()))
+    #print("summary of minority: "+str(df_minority.funded_or_acquired.value_counts()))
 
     # Upsample minority class
     df_majority_downsampled = resample(df_majority,
@@ -305,8 +308,8 @@ def downsample_data(data):
     df_downsampled = pd.concat([df_majority_downsampled, df_minority])
 
     # Display new class counts
-    print("after downsampling:")
-    print(df_downsampled.funded_or_acquired.value_counts())
+    #print("after downsampling:")
+    #print(df_downsampled.funded_or_acquired.value_counts())
 
     return df_downsampled
 
@@ -314,10 +317,19 @@ def downsample_data(data):
 data = prepare_data()
 data_downsampled = downsample_data(data)
 
-#model_dt(data_downsampled)
+print("---")
+print("Decision Tree:")
+model_dt(data_downsampled)
+#print("---")
+#print("GaussianNB:")
 #model_gauss(data_downsampled)
-#model_linear(data_downsampled)
-model_SVC(data_downsampled)
+#print("---")
+#print("LogisticRegression:")
+#m = model_linear(data_downsampled)
+#print("---")
+#print("SVC:")
+#model_SVC(data_downsampled)
+
 
 
 #data.to_csv('data.csv')
