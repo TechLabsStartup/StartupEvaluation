@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 import numpy as np
 
-pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_model.pkl', 'rb')
+pickle_in = open('D:\Git_portfolio\SE_Main\StartupEvaluation/decision_tree_model.pkl', 'rb')
 classifier = pickle.load(pickle_in)
 
 st.title('Will your Startup be successfull?')
