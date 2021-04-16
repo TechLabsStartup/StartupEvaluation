@@ -12,6 +12,8 @@ from sklearn.svm import SVC
 from sklearn.utils import resample
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import pickle
+import seaborn as sns
+
 
 
 def gender():
@@ -129,12 +131,8 @@ def prepare_data():
     return train
 
 def model_dt(data):
-    #bulid the model
     #from: https://machinelearningmastery.com/machine-learning-in-python-step-by-step/
 
-    # split the dataset in training and testing data. This is a important step in
-    # every machine learning project. But you will learn about this in detail in
-    # your curriculum videos and exercises
     X = data.loc[:, data.columns != 'funded_or_acquired']
     y = data.loc[:, 'funded_or_acquired']
 
@@ -156,13 +154,20 @@ def model_dt(data):
 
     importance = model.feature_importances_
     # summarize feature importance
-    for i, v in enumerate(importance):
-        print('Feature: %0d, Score: %.5f' % (i, v))
+    #for i, v in enumerate(importance):
+        #print('Feature: %0d, Score: %.5f' % (i, v))
     # plot feature importance
+    pyplot.rcParams["figure.figsize"] = (15, 10)
     pyplot.bar([x for x in range(len(importance))], importance)
     pyplot.show()
 
-    print("----")
+    feat_importances = pd.Series(model.feature_importances_, index=X_train.columns)
+    ax = feat_importances.nlargest(10).plot(kind='barh')
+    ax.set(ylabel="feature (top 10)", xlabel="feature importance (decision tree classifier)")
+    pyplot.savefig("decision_tree_feature_importances.png")
+    pyplot.show()
+
+
     print("checking on training data:")
     model2 = DecisionTreeClassifier()
     model2.fit(X_train, Y_train)
@@ -171,6 +176,8 @@ def model_dt(data):
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return accuracy_score(Y_validation, predictions)
 
 def model_gauss(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
@@ -188,15 +195,16 @@ def model_gauss(data):
     print(classification_report(Y_validation, predictions))
 
 
-    print("----")
     print("checking on training data:")
-    model2 = DecisionTreeClassifier()
+    model2 = GaussianNB()
     model2.fit(X_train, Y_train)
     predictions2 = model2.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return accuracy_score(Y_validation, predictions)
 
 def model_linear(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
@@ -214,15 +222,16 @@ def model_linear(data):
     print(classification_report(Y_validation, predictions))
 
 
-    print("----")
     print("checking on training data:")
-    model2 = DecisionTreeClassifier()
+    model2 = LogisticRegression(solver='liblinear', multi_class='ovr')
     model2.fit(X_train, Y_train)
     predictions2 = model2.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return accuracy_score(Y_validation, predictions)
 
 def model_SVC(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
@@ -240,15 +249,17 @@ def model_SVC(data):
     print(classification_report(Y_validation, predictions))
 
 
-    print("----")
+
     print("checking on training data:")
-    model2 = DecisionTreeClassifier()
+    model2 = SVC(gamma='auto')
     model2.fit(X_train, Y_train)
     predictions2 = model2.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return accuracy_score(Y_validation, predictions)
 
 def upsample_data(data):
     #from: https://elitedatascience.com/imbalanced-classes
@@ -283,17 +294,17 @@ def upsample_data(data):
 def downsample_data(data):
     #from: https://elitedatascience.com/imbalanced-classes
 
-    print("------")
-    print("trying to balance the dataset using downsampling = delete un-funded startups until here are as many companies as non funded ones")
+    #print("------")
+    #print("trying to balance the dataset using downsampling = delete un-funded startups until here are as many companies as non funded ones")
 
-    print("summary of dataset: "+str(data.funded_or_acquired.value_counts()))
+    #print("summary of dataset: "+str(data.funded_or_acquired.value_counts()))
 
     # Separate majority and minority classes
     df_majority = data[data.funded_or_acquired == 0]
     df_minority = data[data.funded_or_acquired == 1]
 
-    print("summary of majority: "+str(df_majority.funded_or_acquired.value_counts()))
-    print("summary of minority: "+str(df_minority.funded_or_acquired.value_counts()))
+    #print("summary of majority: "+str(df_majority.funded_or_acquired.value_counts()))
+    #print("summary of minority: "+str(df_minority.funded_or_acquired.value_counts()))
 
     # Upsample minority class
     df_majority_downsampled = resample(df_majority,
@@ -305,8 +316,8 @@ def downsample_data(data):
     df_downsampled = pd.concat([df_majority_downsampled, df_minority])
 
     # Display new class counts
-    print("after downsampling:")
-    print(df_downsampled.funded_or_acquired.value_counts())
+    #print("after downsampling:")
+    #print(df_downsampled.funded_or_acquired.value_counts())
 
     return df_downsampled
 
@@ -314,11 +325,25 @@ def downsample_data(data):
 data = prepare_data()
 data_downsampled = downsample_data(data)
 
-#model_dt(data_downsampled)
-#model_gauss(data_downsampled)
-#model_linear(data_downsampled)
-model_SVC(data_downsampled)
+print("---")
+print("Decision Tree:")
+acc_dt = model_dt(data_downsampled)
+print("---")
+print("GaussianNB:")
+acc_gauss = model_gauss(data_downsampled)
+print("---")
+print("LogisticRegression:")
+acc_linear = model_linear(data_downsampled)
+print("---")
+print("SVC:")
+acc_SVC = model_SVC(data_downsampled)
 
+d = {'algorithms': ["Decision Tree", "GaussianNB", "LogisticRegression", "SVC"], 'accuracy': [acc_dt, acc_gauss, acc_linear, acc_SVC]}
+accuracies = pd.DataFrame(data=d)
+ax = sns.barplot(x=accuracies['algorithms'], y=accuracies['accuracy'], color='tab:blue')
+pyplot.axhline(y=0.5, color='k', linestyle='--')
+#accuracies.plot.bar()
+pyplot.show()
 
 #data.to_csv('data.csv')
 
