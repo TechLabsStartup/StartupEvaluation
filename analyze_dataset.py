@@ -64,6 +64,9 @@ countries_undummied_analysis = analyze('countries', countries_undummied)
 cities_undummied = undummy(['New York','San Francisco','London','Chicago','Los Angeles','Paris','Seattle','Austin','Boston','Atlanta','Bangalore','Berlin','Tokyo','New Delhi','Amsterdam','Beijing','Moscow','Shanghai','Tel Aviv','Sao Paulo'], model_data, 'cities')
 cities_undummied_analysis = analyze('cities', cities_undummied)
 
+cities_USA_undummied = undummy(['New York','San Francisco','Chicago','Los Angeles','Seattle','Austin','Boston','Atlanta'], model_data, 'cities')
+cities_USA_undummied_analysis = analyze('cities', cities_USA_undummied)
+
 domain_ending_undummied = undummy(['domain_ending_Other','domain_ending_biz','domain_ending_ca','domain_ending_co','domain_ending_com','domain_ending_de','domain_ending_es','domain_ending_eu','domain_ending_fr','domain_ending_ie','domain_ending_in','domain_ending_io','domain_ending_it','domain_ending_me','domain_ending_net','domain_ending_nl','domain_ending_org','domain_ending_ru','domain_ending_se','domain_ending_tv','domain_ending_us'], model_data, 'domain_ending')
 domain_ending_undummied_analysis = analyze('domain_ending', domain_ending_undummied)
 

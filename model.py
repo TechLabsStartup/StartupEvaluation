@@ -12,6 +12,8 @@ from sklearn.svm import SVC
 from sklearn.utils import resample
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import pickle
+import seaborn as sns
+
 
 
 def gender():
@@ -175,6 +177,8 @@ def model_dt(data):
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
 
+    return accuracy_score(Y_validation, predictions)
+
 def model_gauss(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
     y = data.loc[:, 'funded_or_acquired']
@@ -192,13 +196,15 @@ def model_gauss(data):
 
 
     print("checking on training data:")
-    model2 = DecisionTreeClassifier()
+    model2 = GaussianNB()
     model2.fit(X_train, Y_train)
     predictions2 = model2.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return accuracy_score(Y_validation, predictions)
 
 def model_linear(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
@@ -217,7 +223,7 @@ def model_linear(data):
 
 
     print("checking on training data:")
-    model2 = DecisionTreeClassifier()
+    model2 = LogisticRegression(solver='liblinear', multi_class='ovr')
     model2.fit(X_train, Y_train)
     predictions2 = model2.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
@@ -225,7 +231,7 @@ def model_linear(data):
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
 
-    return model
+    return accuracy_score(Y_validation, predictions)
 
 def model_SVC(data):
     X = data.loc[:, data.columns != 'funded_or_acquired']
@@ -245,13 +251,15 @@ def model_SVC(data):
 
 
     print("checking on training data:")
-    model2 = DecisionTreeClassifier()
+    model2 = SVC(gamma='auto')
     model2.fit(X_train, Y_train)
     predictions2 = model2.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
 
     print("confusion matrix")
     print(confusion_matrix(Y_train, predictions2))
+
+    return accuracy_score(Y_validation, predictions)
 
 def upsample_data(data):
     #from: https://elitedatascience.com/imbalanced-classes
@@ -319,18 +327,23 @@ data_downsampled = downsample_data(data)
 
 print("---")
 print("Decision Tree:")
-model_dt(data_downsampled)
-#print("---")
-#print("GaussianNB:")
-#model_gauss(data_downsampled)
-#print("---")
-#print("LogisticRegression:")
-#m = model_linear(data_downsampled)
-#print("---")
-#print("SVC:")
-#model_SVC(data_downsampled)
+acc_dt = model_dt(data_downsampled)
+print("---")
+print("GaussianNB:")
+acc_gauss = model_gauss(data_downsampled)
+print("---")
+print("LogisticRegression:")
+acc_linear = model_linear(data_downsampled)
+print("---")
+print("SVC:")
+acc_SVC = model_SVC(data_downsampled)
 
-
+d = {'algorithms': ["Decision Tree", "GaussianNB", "LogisticRegression", "SVC"], 'accuracy': [acc_dt, acc_gauss, acc_linear, acc_SVC]}
+accuracies = pd.DataFrame(data=d)
+ax = sns.barplot(x=accuracies['algorithms'], y=accuracies['accuracy'], color='tab:blue')
+pyplot.axhline(y=0.5, color='k', linestyle='--')
+#accuracies.plot.bar()
+pyplot.show()
 
 #data.to_csv('data.csv')
 
