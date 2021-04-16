@@ -27,7 +27,6 @@ submit = st.button('Predict')
 if submit:
 
     # Modify Data
-
     # People
     # get Gender
     name_gender = pd.read_csv('firstNameGender.csv', index_col=0)
@@ -104,6 +103,7 @@ if submit:
 
 # RUN in Terminal:
 # streamlit run streamlit_prediction.py
+# streamlit run /Users/schultemarius/Documents/GitHub/StartupEvaluation/streamlit_prediction.py
 
 
 
