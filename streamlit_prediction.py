@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 import numpy as np
 
-pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_model.pkl', 'rb')
+pickle_in = open('https://raw.githubusercontent.com/TechLabsStartup/StartupEvaluation/main/decision_tree_model.pkl', 'rb')
 classifier = pickle.load(pickle_in)
 
 st.title('Will your Startup be successfull?')
@@ -29,7 +29,7 @@ if submit:
     # Modify Data
     # People
     # get Gender
-    name_gender = pd.read_csv('firstNameGender.csv', index_col=0)
+    name_gender = pd.read_csv('https://raw.githubusercontent.com/TechLabsStartup/StartupEvaluation/main/firstNameGender.csv', index_col=0)
 
     people = {'first_name': [firstname1, firstname2, firstname3]}
     people = pd.DataFrame(people)
@@ -44,7 +44,7 @@ if submit:
 
     # People
     # get Race
-    name_race = pd.read_csv('lastNameRace.csv', index_col=0)
+    name_race = pd.read_csv('https://raw.githubusercontent.com/TechLabsStartup/StartupEvaluation/main/lastNameRace.csv', index_col=0)
 
     people = {'last_name': [lastname1, lastname2, lastname3]}
     people = pd.DataFrame(people)
