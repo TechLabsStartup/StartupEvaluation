@@ -14,10 +14,10 @@ firstname2 = st.text_input("First Name of the founder 2:")
 lastname2 = st.text_input("Last Name of the founder 2:")
 firstname3 = st.text_input("First Name of the founder 3:")
 lastname3 = st.text_input("Last Name of the founder 3:")
-university = st.text_input("University where the founder studied") ## Drop Down
-major = st.text_input("University Major")
-city = st.selectbox("City where the Startup operates", ("New York","San Francisco","London","Chicago","Los Angeles","Paris","Seattle","Austin","Boston","Atlanta","Bangalore","Berlin","Tokyo","New Delhi","Amsterdam","Beijing","Moscow","Shanghai","Tel Aviv","Sao Paulo"))
-country = st.selectbox("Country where the Startup operate", ( "USA","GBR","IND","CAN","DEU","FRA","AUS","ESP","ISR","CHN","IRL","NLD" ))
+university = st.text_input("University where the CEO studied") ## Drop Down
+major = st.text_input("University Major of the CEO")
+city = st.selectbox("City where the Startup operates", ("Munich","Amsterdam","Atlanta","Austin","Bangalore","Beijing","Berlin","Boston","Chicago","London","Los Angeles","Moscow","New Delhi","New York","Paris","San Francisco","Sao Paulo","Seattle","Shanghai","Tel Aviv","Tokyo","Other"))
+country = st.selectbox("Country where the Startup operate", ("DEU","AUS","CAN","CHN","ESP","FRA","GBR","IND","IRL","ISR","NLD","USA","Other" ))
 domain= st.text_input("Website") ## Drop Down
 
   #Error Message fehlt
@@ -29,7 +29,7 @@ if submit:
     # Modify Data
     # People
     # get Gender
-    name_gender = pd.read_csv('firstNameGender.csv', index_col=0)
+    name_gender = pd.read_csv('https://raw.githubusercontent.com/TechLabsStartup/StartupEvaluation/main/firstNameGender.csv', index_col=0)
 
     people = {'first_name': [firstname1, firstname2, firstname3]}
     people = pd.DataFrame(people)
@@ -44,7 +44,7 @@ if submit:
 
     # People
     # get Race
-    name_race = pd.read_csv('lastNameRace.csv', index_col=0)
+    name_race = pd.read_csv('https://raw.githubusercontent.com/TechLabsStartup/StartupEvaluation/main/lastNameRace.csv', index_col=0)
 
     people = {'last_name': [lastname1, lastname2, lastname3]}
     people = pd.DataFrame(people)
@@ -98,8 +98,10 @@ if submit:
     prediction = classifier.predict(result)
     if prediction == 1:
         st.write('Congratulation your Startup will be successfull')
+        st.markdown("(https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)")
     else:
         st.write(" we are really sorry to say you that your Startup will not be successfull.")
+        st.markdown("(https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)")
 
 # RUN in Terminal:
 # streamlit run streamlit_prediction.py
