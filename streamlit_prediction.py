@@ -98,6 +98,7 @@ if submit:
     prediction = classifier.predict(result)
     if prediction == 1:
         st.write('Congratulation your Startup will be successfull')
+        st.markdown("(https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)")
     else:
         st.write(" we are really sorry to say you that your Startup will not be successfull.")
 
