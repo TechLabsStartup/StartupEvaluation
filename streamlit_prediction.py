@@ -4,12 +4,14 @@ import pickle
 import pandas as pd
 import numpy as np
 
-pickle_in = open('decision_tree_model.pkl', 'rb')
+#pickle_in = open('decision_tree_model.pkl', 'rb')
+pickle_in = open('decision_tree_regressor_model.pkl', 'rb')
 #pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_regressor_model.pkl', 'rb')
 #pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_model.pkl', 'rb')
 classifier = pickle.load(pickle_in)
 
 st.title('Will your Startup be successful?')
+st.markdown("***")
 firstname1 = st.text_input("First Name of the founder 1:")
 lastname1 = st.text_input("Last Name of the founder 1:")
 firstname2 = st.text_input("First Name of the founder 2:")
@@ -108,19 +110,21 @@ if submit:
             break;
 
     if check:
+        st.markdown("***")
         st.error("Please input data")
     else:
         prediction = classifier.predict(result)
-        print(prediction)
-        print(prediction)
-        print(prediction)
 
-        if prediction == 1:
+        if prediction >= 0.5:
+            st.markdown("***")
             st.success('Congratulations! Your Startup will be successfull')
+            prediction = prediction.item(0)
+            st.success("The probability of success is: "+'{:.2%}'.format(prediction))
             #st.write("![Alt Text](https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)", width=700)
             st.image("photoWinner.jpg")
             #st.image("/Users/schultemarius/Documents/GitHub/StartupEvaluation/photoWinner.jpg")
         else:
+            st.markdown("***")
             st.error(" We are really sorry to say you that your Startup will not be successfull.")
             # st.write("![Alt Text](https://media.giphy.com/media/kZj0PZtAJeiYYvnM3f/source.mp4)", width=700)
             st.image("photoLoser.jpg")
