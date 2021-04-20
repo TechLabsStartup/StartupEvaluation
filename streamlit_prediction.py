@@ -8,7 +8,7 @@ pickle_in = open('decision_tree_model.pkl', 'rb')
 #pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_model.pkl', 'rb')
 classifier = pickle.load(pickle_in)
 
-st.title('Will your Startup be successfull?')
+st.title('Will your Startup be successful?')
 firstname1 = st.text_input("First Name of the founder 1:")
 lastname1 = st.text_input("Last Name of the founder 1:")
 firstname2 = st.text_input("First Name of the founder 2:")
