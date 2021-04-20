@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 pickle_in = open('decision_tree_model.pkl', 'rb')
+#pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_regressor_model.pkl', 'rb')
 #pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_model.pkl', 'rb')
 classifier = pickle.load(pickle_in)
 
@@ -21,7 +22,7 @@ city = st.selectbox("City where the Startup operates", ("Munich","Amsterdam","At
 country = st.selectbox("Country where the Startup operate", ("DEU","AUS","CAN","CHN","ESP","FRA","GBR","IND","IRL","ISR","NLD","USA","Other" ))
 domain= st.text_input("Website") ## Drop Down
 
-  #Error Message fehlt
+#Error Message fehlt
 
 submit = st.button('Predict')
 
@@ -39,7 +40,6 @@ if submit:
     people["first_name"] = people["first_name"].str.split("-").str[0]
     people["first_name"] = people["first_name"].str.split(" ").str[0]
     people_gender = pd.merge(people, name_gender, on="first_name", how="left")
-    print(people_gender)
     female = people_gender.Gender.str.count("female").sum()
     female = round((female / 3), 2)
 
@@ -71,7 +71,6 @@ if submit:
 
     #Was ist die Domain length? auch das www. oder nur facebook?
 
-    print(company_domain_length)
     list_of_string =['com', 'co', 'net', 'org', 'de', 'in', 'me', 'ca', 'tv', 'us', 'it', 'io', 'fr', 'ru', 'eu', 'nl', 'biz', 'es',
          'se', 'ie']
     if domain_ending not in list_of_string:
@@ -90,7 +89,6 @@ if submit:
         country = str(country)
         result.loc[1, country] = 1
 
-
     result.loc[1, 'female'] = female
     result.loc[1, 'white'] = white
     result.loc[1, 'black'] = black
@@ -101,19 +99,33 @@ if submit:
     result.loc[1, domain_result] = 1
     result.loc[1, "domain_name_length"] = company_domain_length
 
-    if firstname1 == "":
+    check = False
+    list_of_str = [firstname1, domain, university, major]
+    for elem in list_of_str:
+        # Check if string is empty or contain only spaces
+        if elem == "":
+            check = True
+            break;
+
+    if check:
         st.error("Please input data")
     else:
         prediction = classifier.predict(result)
+        print(prediction)
+        print(prediction)
+        print(prediction)
+
         if prediction == 1:
             st.success('Congratulations! Your Startup will be successfull')
             #st.write("![Alt Text](https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)", width=700)
             st.image("photoWinner.jpg")
+            #st.image("/Users/schultemarius/Documents/GitHub/StartupEvaluation/photoWinner.jpg")
         else:
             st.error(" We are really sorry to say you that your Startup will not be successfull.")
-            # st.image("https://media.giphy.com/media/kZj0PZtAJeiYYvnM3f/source.mp4", width=700)
             # st.write("![Alt Text](https://media.giphy.com/media/kZj0PZtAJeiYYvnM3f/source.mp4)", width=700)
             st.image("photoLoser.jpg")
+            #st.image("/Users/schultemarius/Documents/GitHub/StartupEvaluation/photoLoser.jpg")
+
 
 # RUN in Terminal:streamlit run /Users/schultemarius/Documents/GitHub/StartupEvaluation/streamlit_prediction.py
 # streamlit run streamlit_prediction.py
