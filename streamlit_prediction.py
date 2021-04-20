@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 pickle_in = open('decision_tree_model.pkl', 'rb')
+#pickle_in = open('/Users/schultemarius/Documents/GitHub/StartupEvaluation/decision_tree_model.pkl', 'rb')
 classifier = pickle.load(pickle_in)
 
 st.title('Will your Startup be successful?')
@@ -79,33 +80,39 @@ if submit:
     domain_result = "domain_ending_"
     domain_result += domain_ending
 
-########################################
-    city = str(city)
-    country = str(country)
+##########################################
+
+    if city not in ("Munich", "Other"):
+        city = str(city)
+        result.loc[1, city] = 1
+
+    if country != "Other":
+        country = str(country)
+        result.loc[1, country] = 1
+
 
     result.loc[1, 'female'] = female
     result.loc[1, 'white'] = white
     result.loc[1, 'black'] = black
     result.loc[1, 'hispanic'] = hispanic
     result.loc[1, 'asian'] = asian
-    result.loc[1, city] = 1
-    result.loc[1, country]= 1
+   #result.loc[1, city] = 1
+   #result.loc[1, country]= 1
     result.loc[1, domain_result] = 1
     result.loc[1, "domain_name_length"] = company_domain_length
 
-    print(result)
-
     prediction = classifier.predict(result)
     if prediction == 1:
-        st.write('Congratulation your Startup will be successfull')
-        st.markdown("(https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)")
+        st.success('Congratulations! Your Startup will be successfull')
+        st.image("https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4",width=700)
     else:
-        st.write(" we are really sorry to say you that your Startup will not be successfull.")
-        st.markdown("(https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)")
+        st.error(" We are really sorry to say you that your Startup will not be successfull.")
+        st.image("https://media.giphy.com/media/kZj0PZtAJeiYYvnM3f/source.mp4", width=700)
+        # st.write("![Alt Text](https://media.giphy.com/media/kZj0PZtAJeiYYvnM3f/source.mp4)")
 
-# RUN in Terminal:
+# RUN in Terminal:streamlit run /Users/schultemarius/Documents/GitHub/StartupEvaluation/streamlit_prediction.py
 # streamlit run streamlit_prediction.py
-# streamlit run /Users/schultemarius/Documents/GitHub/StartupEvaluation/streamlit_prediction.py
+#
 
 
 
