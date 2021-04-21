@@ -13,6 +13,7 @@ from sklearn.utils import resample
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import pickle
 import seaborn as sns
+from sklearn.tree import DecisionTreeRegressor
 
 
 
@@ -164,6 +165,9 @@ def model_dt(data):
     feat_importances = pd.Series(model.feature_importances_, index=X_train.columns)
     ax = feat_importances.nlargest(10).plot(kind='barh')
     ax.set(ylabel="feature (top 10)", xlabel="feature importance (decision tree classifier)")
+    ax.set_xlabel("feature importance (decision tree classifier)", fontsize=20)
+    ax.set_ylabel("feature (top 10)", fontsize=20)
+    ax.tick_params(labelsize=10)
     pyplot.savefig("decision_tree_feature_importances.png")
     pyplot.show()
 
@@ -251,9 +255,8 @@ def model_SVC(data):
 
 
     print("checking on training data:")
-    model2 = SVC(gamma='auto')
-    model2.fit(X_train, Y_train)
-    predictions2 = model2.predict(X_train)
+
+    predictions2 = model.predict(X_train)
     print("accuracy_score (training): "+ str(accuracy_score(Y_train, predictions2)))
 
     print("confusion matrix")
@@ -321,31 +324,61 @@ def downsample_data(data):
 
     return df_downsampled
 
+def model_dt_regressor(data):
+    #from: https://machinelearningmastery.com/machine-learning-in-python-step-by-step/
+
+    X = data.loc[:, data.columns != 'funded_or_acquired']
+    y = data.loc[:, 'funded_or_acquired']
+
+    X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.3, random_state=1, shuffle=True)
+
+    model = DecisionTreeRegressor(random_state=0)
+    model.fit(X_train, Y_train)
+    predictions = model.predict(X_validation)
+
+    # Saving the Model
+    pickle_out = open("decision_tree_regressor_model.pkl", "wb")
+    pickle.dump(model, pickle_out)
+    pickle_out.close()
+
+
+    return predictions
+
 
 data = prepare_data()
+data.rename(columns={'domain_name_length': 'domain_length'}, inplace=True)
 data_downsampled = downsample_data(data)
 
-print("---")
-print("Decision Tree:")
-acc_dt = model_dt(data_downsampled)
-print("---")
-print("GaussianNB:")
-acc_gauss = model_gauss(data_downsampled)
-print("---")
-print("LogisticRegression:")
-acc_linear = model_linear(data_downsampled)
-print("---")
-print("SVC:")
-acc_SVC = model_SVC(data_downsampled)
+def all_models():
+    print("---")
+    print("Decision Tree:")
+    acc_dt = model_dt(data_downsampled)
+    print("---")
+    print("GaussianNB:")
+    acc_gauss = model_gauss(data_downsampled)
+    print("---")
+    print("LogisticRegression:")
+    acc_linear = model_linear(data_downsampled)
+    print("---")
+    print("SVC:")
+    acc_SVC = model_SVC(data_downsampled)
 
-d = {'algorithms': ["Decision Tree", "GaussianNB", "LogisticRegression", "SVC"], 'accuracy': [acc_dt, acc_gauss, acc_linear, acc_SVC]}
-accuracies = pd.DataFrame(data=d)
-ax = sns.barplot(x=accuracies['algorithms'], y=accuracies['accuracy'], color='tab:blue')
-pyplot.axhline(y=0.5, color='k', linestyle='--')
-#accuracies.plot.bar()
-pyplot.show()
+    d = {'algorithms': ["Decision Tree", "GaussianNB", "LogisticRegression", "SVC"], 'accuracy': [acc_dt, acc_gauss, acc_linear, acc_SVC]}
+    accuracies = pd.DataFrame(data=d)
+    ax = sns.barplot(x=accuracies['algorithms'], y=accuracies['accuracy'], color='tab:blue')
+    ax.set_xlabel("algorithms", fontsize=20)
+    ax.set_ylabel("accuracy", fontsize=20)
+    ax.tick_params(labelsize=15)
+    pyplot.axhline(y=0.5, color='k', linestyle='--')
+    #accuracies.plot.bar()
+    pyplot.show()
 
-#data.to_csv('data.csv')
+    #data.to_csv('data.csv')
+
+#all_models()
+
+regression_dt_predictions = model_dt_regressor(data_downsampled)
+
 
 
 

@@ -15,6 +15,12 @@ def analyze(column_name, dataset):
     ax = analysis.plot.bar(color='tab:blue')
     ax.set(ylabel="mean of funded/acquired")
     plt.axhline(y=y_mean, color='k', linestyle='--')
+    ax.set_xlabel(column_name, fontsize=20)
+    ax.set_ylabel("mean of funded/acquired", fontsize=20)
+    ax.tick_params(labelsize=15)
+    for item in ax.get_xticklabels():
+        if column_name == "cities":
+            item.set_rotation(0)
     filename = column_name + "_analysis.png"
     plt.savefig(filename)
     plt.show()
@@ -32,6 +38,11 @@ def create_bins_and_analyze(column_name, dataset, bin_step):
     ax = sns.barplot(x=x, y=y, color='tab:blue')
     ax.set(ylabel="mean of funded/acquired")
     plt.axhline(y=y_mean, color='k', linestyle='--')
+    ax.set_xlabel(column_name, fontsize=20)
+    ax.set_ylabel("mean of funded/acquired", fontsize=20)
+    ax.tick_params(labelsize=15)
+    if column_name == "black":
+        ax.set_xlabel("percentage of black founders", fontsize=20)
     filename = column_name + "_analysis.png"
     plt.savefig(filename)
     plt.show()
@@ -66,6 +77,9 @@ cities_undummied_analysis = analyze('cities', cities_undummied)
 
 cities_USA_undummied = undummy(['New York','San Francisco','Chicago','Los Angeles','Seattle','Austin','Boston','Atlanta'], model_data, 'cities')
 cities_USA_undummied_analysis = analyze('cities', cities_USA_undummied)
+
+cities_USA_reduced_undummied = undummy(['New York','San Francisco','Chicago','Los Angeles'], model_data, 'cities')
+cities_USA_reduced_undummied_analysis = analyze('cities', cities_USA_reduced_undummied)
 
 domain_ending_undummied = undummy(['domain_ending_Other','domain_ending_biz','domain_ending_ca','domain_ending_co','domain_ending_com','domain_ending_de','domain_ending_es','domain_ending_eu','domain_ending_fr','domain_ending_ie','domain_ending_in','domain_ending_io','domain_ending_it','domain_ending_me','domain_ending_net','domain_ending_nl','domain_ending_org','domain_ending_ru','domain_ending_se','domain_ending_tv','domain_ending_us'], model_data, 'domain_ending')
 domain_ending_undummied_analysis = analyze('domain_ending', domain_ending_undummied)
