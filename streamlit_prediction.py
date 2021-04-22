@@ -116,6 +116,8 @@ if submit:
         prediction = classifier.predict(result)
 
         if prediction >= 0.5:
+            if prediction == 1.0:
+               prediction == 0.99
             st.markdown("***")
             st.success('Congratulations! Your Startup will be successfull')
             prediction = prediction.item(0)
