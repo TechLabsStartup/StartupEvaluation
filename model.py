@@ -132,8 +132,6 @@ def prepare_data():
     return train
 
 def model_dt(data):
-    #from: https://machinelearningmastery.com/machine-learning-in-python-step-by-step/
-
     X = data.loc[:, data.columns != 'funded_or_acquired']
     y = data.loc[:, 'funded_or_acquired']
 
