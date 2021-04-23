@@ -117,9 +117,9 @@ if submit:
 
         if prediction >= 0.5:
             if prediction == 1.0:
-               prediction = 0.99
+               prediction -= 0.01
             st.markdown("***")
-            st.success('Congratulations! Your Startup will be successfull')
+            st.success('Congratulations! Your Startup will be successful')
             prediction = prediction.item(0)
             st.success("The probability of success is: "+'{:.2%}'.format(prediction))
             #st.write("![Alt Text](https://media.giphy.com/media/dAcn0Q09BfHOP8eGp7/source.mp4)", width=700)
@@ -127,7 +127,7 @@ if submit:
             #st.image("/Users/schultemarius/Documents/GitHub/StartupEvaluation/photoWinner.jpg")
         else:
             st.markdown("***")
-            st.error(" We are really sorry to say you that your Startup will not be successfull.")
+            st.error(" We are really sorry to say you that your Startup will not be successful.")
             # st.write("![Alt Text](https://media.giphy.com/media/kZj0PZtAJeiYYvnM3f/source.mp4)", width=700)
             st.image("photoLoser.jpg")
             #st.image("/Users/schultemarius/Documents/GitHub/StartupEvaluation/photoLoser.jpg")
